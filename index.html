@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bộ câu hỏi CNXHKH</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+</head>
+<body class="bg-body-tertiary">
+  <div id="app" class="py-4">
+    <div class="container">
+      <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+        <div>
+          <h1 class="h3 mb-1">Bộ câu hỏi CNXHKH</h1>
+          <p class="text-body-secondary mb-0">
+            Bấm số câu hỏi ở cột trái để xem nội dung. Chỉ mở khóa câu tiếp theo khi trả lời đúng.
+          </p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+          <span class="badge text-bg-primary fs-6">Tổng: {{ questions.length }} câu</span>
+          <span class="badge text-bg-success fs-6">Đã đúng: {{ completedCount }}</span>
+          <span class="badge text-bg-secondary fs-6">Đang xem: Câu {{ currentQuestion ? currentQuestion.stt : 0 }}</span>
+        </div>
+      </div>
+
+      <div v-if="!questions.length" class="alert alert-danger mb-0">
+        Không tìm thấy dữ liệu câu hỏi. Hãy kiểm tra file <code>questions.js</code>.
+      </div>
+
+      <div v-else class="row g-4">
+        <div class="col-lg-4">
+          <div class="card shadow-sm">
+            <div class="card-header fw-semibold">Số câu hỏi</div>
+            <div class="card-body">
+              <div class="row row-cols-4 row-cols-md-5 row-cols-lg-4 g-2">
+                <div
+                  v-for="(question, index) in questions"
+                  :key="question.stt"
+                  class="col"
+                >
+                  <button
+                    type="button"
+                    class="btn w-100"
+                    :class="questionButtonClass(index)"
+                    :disabled="!isUnlocked(index)"
+                    @click="selectQuestion(index)"
+                  >
+                    {{ question.stt }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-8">
+          <div class="card shadow-sm">
+            <div class="card-body p-4">
+              <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+                <div>
+                  <span class="badge text-bg-dark mb-2">Câu {{ currentQuestion.stt }}</span>
+                  <h2 class="h4 mb-0">Nội dung câu hỏi</h2>
+                </div>
+                <span class="badge fs-6" :class="statusBadgeClass(currentIndex)">
+                  {{ statusLabel(currentIndex) }}
+                </span>
+              </div>
+
+              <div class="mb-4">
+                <p class="fs-5 mb-0">{{ currentQuestion.cauHoi }}</p>
+              </div>
+
+              <div class="list-group mb-4">
+                <label
+                  v-for="option in currentOptions"
+                  :key="option.key"
+                  class="list-group-item list-group-item-action"
+                  :class="{ active: selectedAnswers[currentIndex] === option.key }"
+                >
+                  <input
+                    class="form-check-input me-2"
+                    type="radio"
+                    :name="'question-' + currentQuestion.stt"
+                    :value="option.key"
+                    v-model="selectedAnswers[currentIndex]"
+                    :disabled="isCorrect(currentIndex)"
+                  >
+                  <span class="fw-semibold">{{ option.label }}.</span>
+                  {{ option.text }}
+                </label>
+              </div>
+
+              <div
+                v-if="feedback[currentIndex]"
+                class="alert"
+                :class="feedback[currentIndex].correct ? 'alert-success' : 'alert-danger'"
+                role="alert"
+              >
+                {{ feedback[currentIndex].message }}
+              </div>
+
+              <div class="d-flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  @click="checkAnswer"
+                  :disabled="!selectedAnswers[currentIndex] || isCorrect(currentIndex)"
+                >
+                  Kiểm tra
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary"
+                  @click="resetSelection"
+                  :disabled="isCorrect(currentIndex) || (!selectedAnswers[currentIndex] && !feedback[currentIndex])"
+                >
+                  Reset lựa chọn
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-success"
+                  @click="goToNextQuestion"
+                  :disabled="!canGoNext"
+                >
+                  Qua câu tiếp theo
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./questions.js"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        return {
+          questions: Array.isArray(window.questions) ? window.questions : [],
+          currentIndex: 0,
+          unlockedIndex: 0,
+          selectedAnswers: {},
+          states: {},
+          feedback: {}
+        };
+      },
+      computed: {
+        currentQuestion() {
+          return this.questions[this.currentIndex] || null;
+        },
+        currentOptions() {
+          if (!this.currentQuestion) {
+            return [];
+          }
+
+          return [
+            { key: "traloi1", label: "A", text: this.currentQuestion.traloi1 },
+            { key: "traloi2", label: "B", text: this.currentQuestion.traloi2 },
+            { key: "traloi3", label: "C", text: this.currentQuestion.traloi3 },
+            { key: "traloi4", label: "D", text: this.currentQuestion.traloi4 }
+          ];
+        },
+        completedCount() {
+          return Object.values(this.states).filter((value) => value === "correct").length;
+        },
+        canGoNext() {
+          return this.isCorrect(this.currentIndex) && this.currentIndex < this.questions.length - 1;
+        }
+      },
+      methods: {
+        isUnlocked(index) {
+          return index <= this.unlockedIndex;
+        },
+        isCorrect(index) {
+          return this.states[index] === "correct";
+        },
+        isIncorrect(index) {
+          return this.states[index] === "incorrect";
+        },
+        selectQuestion(index) {
+          if (!this.isUnlocked(index)) {
+            return;
+          }
+
+          this.currentIndex = index;
+        },
+        questionButtonClass(index) {
+          if (this.isCorrect(index)) {
+            return this.currentIndex === index ? "btn-success" : "btn-outline-success";
+          }
+
+          if (this.isIncorrect(index)) {
+            return this.currentIndex === index ? "btn-danger" : "btn-outline-danger";
+          }
+
+          if (this.currentIndex === index) {
+            return "btn-primary";
+          }
+
+          return this.isUnlocked(index) ? "btn-outline-primary" : "btn-outline-secondary";
+        },
+        statusBadgeClass(index) {
+          if (this.isCorrect(index)) {
+            return "text-bg-success";
+          }
+
+          if (this.isIncorrect(index)) {
+            return "text-bg-danger";
+          }
+
+          return "text-bg-secondary";
+        },
+        statusLabel(index) {
+          if (this.isCorrect(index)) {
+            return "Đã trả lời đúng";
+          }
+
+          if (this.isIncorrect(index)) {
+            return "Đã kiểm tra: sai";
+          }
+
+          return "Chưa kiểm tra";
+        },
+        checkAnswer() {
+          const selected = this.selectedAnswers[this.currentIndex];
+
+          if (!selected || !this.currentQuestion) {
+            return;
+          }
+
+          if (selected === this.currentQuestion.dapAn) {
+            this.states[this.currentIndex] = "correct";
+            this.feedback[this.currentIndex] = {
+              correct: true,
+              message: "Chính xác. Câu này đã được mở khóa và bạn có thể qua câu tiếp theo."
+            };
+
+            if (this.currentIndex === this.unlockedIndex && this.unlockedIndex < this.questions.length - 1) {
+              this.unlockedIndex += 1;
+            }
+
+            return;
+          }
+
+          this.states[this.currentIndex] = "incorrect";
+          this.feedback[this.currentIndex] = {
+            correct: false,
+            message: "Chưa đúng. Bạn hãy reset lựa chọn hoặc chọn đáp án khác rồi bấm Kiểm tra."
+          };
+        },
+        resetSelection() {
+          delete this.selectedAnswers[this.currentIndex];
+          delete this.feedback[this.currentIndex];
+        },
+        goToNextQuestion() {
+          if (!this.canGoNext) {
+            return;
+          }
+
+          this.currentIndex += 1;
+        }
+      }
+    }).mount("#app");
+  </script>
+</body>
+</html>
