@@ -328,8 +328,8 @@ const questions = [
         "traloi2":  "Con người làm chủ tồn tại xã hội của chính mình, thì do đó làm chủ tự nhiên, làm chủ cả bản thân mình trở thành người tự do.",
         "traloi3":  "Con người làm chủ tư liệu sản xuất, chinh phục tự nhiên, chinh phục vũ trụ, chinh phục bản thân mình để trở thành người tự do.",
         "traloi4":  "Quan hệ sản xuất phát triển, con người làm chủ tư liệu sản xuất, chinh phục tự nhiên, chinh phục vũ trụ, chinh phục bản thân mình để trở thành người tự do.",
-        "dapAn":  "traloi3",
-        "dapAnText":  "Con người làm chủ tư liệu sản xuất, chinh phục tự nhiên, chinh phục vũ trụ, chinh phục bản thân mình để trở thành người tự do."
+        "dapAn":  "traloi2",
+        "dapAnText":  "Con người làm chủ tồn tại xã hội của chính mình, thì do đó làm chủ tự nhiên, làm chủ cả bản thân mình trở thành người tự do."
     },
     {
         "stt":  34,
@@ -428,8 +428,8 @@ const questions = [
         "traloi2":  "Cách mạng Tháng 10 Nga, năm 1917.",
         "traloi3":  "Cách mạng vô sản Pháp.",
         "traloi4":  "Nhà nước Công xã Pari.",
-        "dapAn":  "traloi1",
-        "dapAnText":  "Nhà nước Xô viết, năm 1917."
+        "dapAn":  "traloi2",
+        "dapAnText":  "Cách mạng Tháng 10 Nga, năm 1917."
     },
     {
         "stt":  44,
