@@ -16,7 +16,7 @@
         <div>
           <h1 class="h3 mb-1">Bộ câu hỏi CNXHKH</h1>
           <p class="text-body-secondary mb-0">
-            Bạn có thể chọn bất kỳ cụm nào để làm. Mỗi cụm gồm 50 câu và mở khóa tuần tự bên trong cụm đó.
+            Bạn có thể chọn bất kỳ cụm nào để làm. Mỗi cụm gồm 50 câu và có thể nhảy trực tiếp tới bất kỳ câu nào trong cụm đó.
           </p>
         </div>
         <div class="d-flex flex-wrap gap-2">
@@ -238,11 +238,11 @@
           return this.questionGroups[this.activeGroupIndex] || this.questionGroups[0];
         },
         canGoNext() {
-          if (!this.isCorrect(this.currentIndex) || !this.activeGroup) {
+          if (!this.activeGroup || !this.feedback[this.currentIndex]) {
             return false;
           }
 
-          return this.currentIndex < this.activeGroup.endIndex && this.isUnlocked(this.currentIndex + 1);
+          return this.currentIndex < this.questions.length - 1;
         }
       },
       methods: {
@@ -268,14 +268,7 @@
           return Math.min(group.startIndex + this.getGroupProgress(group.groupIndex), group.endIndex);
         },
         isUnlocked(index) {
-          const groupIndex = this.getGroupIndexByQuestion(index);
-          const group = this.getGroupByIndex(groupIndex);
-
-          if (!group) {
-            return false;
-          }
-
-          return index <= this.getNextQuestionIndexInGroup(group);
+          return index >= 0 && index < this.questions.length;
         },
         isCorrect(index) {
           return this.states[index] === "correct";
@@ -291,7 +284,7 @@
           }
 
           this.activeGroupIndex = groupIndex;
-          this.currentIndex = this.getNextQuestionIndexInGroup(group);
+          this.currentIndex = group.startIndex;
         },
         selectQuestion(index) {
           if (!this.isUnlocked(index)) {
@@ -314,11 +307,11 @@
         },
         questionButtonClass(index) {
           if (this.isCorrect(index)) {
-            return this.currentIndex === index ? "btn-success" : "btn-outline-success";
+            return this.currentIndex === index ? "btn-success shadow" : "btn-success shadow-sm";
           }
 
           if (this.isIncorrect(index)) {
-            return this.currentIndex === index ? "btn-danger" : "btn-outline-danger";
+            return this.currentIndex === index ? "btn-danger shadow" : "btn-danger shadow-sm";
           }
 
           if (this.currentIndex === index) {
@@ -366,7 +359,7 @@
             this.states[this.currentIndex] = "correct";
             this.feedback[this.currentIndex] = {
               correct: true,
-              message: "Chính xác. Bạn có thể làm tiếp câu tiếp theo trong cụm này."
+              message: "Chính xác. Bạn có thể bấm Qua câu tiếp theo."
             };
 
             if (localIndex === this.getGroupProgress(group.groupIndex) && localIndex < group.questionCount - 1) {
@@ -379,7 +372,7 @@
           this.states[this.currentIndex] = "incorrect";
           this.feedback[this.currentIndex] = {
             correct: false,
-            message: "Chưa đúng. Bạn hãy reset lựa chọn hoặc chọn đáp án khác rồi bấm Kiểm tra."
+            message: "Chưa đúng. Bạn vẫn có thể bấm Qua câu tiếp theo hoặc reset để chọn lại."
           };
         },
         resetSelection() {
@@ -391,7 +384,18 @@
             return;
           }
 
+          const group = this.getGroupByIndex(this.currentGroupIndex);
+
+          if (group) {
+            const localIndex = this.currentIndex - group.startIndex;
+            this.groupProgress[group.groupIndex] = Math.max(
+              this.getGroupProgress(group.groupIndex),
+              localIndex + 1
+            );
+          }
+
           this.currentIndex += 1;
+          this.activeGroupIndex = this.getGroupIndexByQuestion(this.currentIndex);
         }
       },
       mounted() {

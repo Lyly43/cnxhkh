@@ -1138,8 +1138,8 @@ const questions = [
         "traloi2":  "Những cộng đồng người cùng với mối quan hệ về sở hữu tư liệu sản xuất, về tổ chức quản lý quá trình sản xuất, về địa vị chính trị – xã hội … giữa con người với con người.",
         "traloi3":  "Những cộng đồng người cùng toàn bộ những mối quan hệ xã hội do sự tác động lẫn nhau của các cộng đồng ấy tạo nên.",
         "traloi4":  "Những cộng đồng người  và tầng lớp xã hội tồn tại khách quan trong một chế độ xã hội nhất định.",
-        "dapAn":  "traloi1",
-        "dapAnText":  "Hệ thống các giai cấp, tầng lớp xã hội tồn tại khách quan trong một chế độ xã hội nhất định, thông qua những mối quan hệ về sở hữu tư liệu sản xuất, tổ chức quản lý sản xuất."
+        "dapAn":  "traloi3",
+        "dapAnText":  "Những cộng đồng người cùng toàn bộ những mối quan hệ xã hội do sự tác động lẫn nhau của các cộng đồng ấy tạo nên."
     },
     {
         "stt":  115,
