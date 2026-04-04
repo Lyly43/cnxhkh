@@ -208,8 +208,8 @@ const questions = [
         "traloi2":  "Tầng lớp tiểu chủ.",
         "traloi3":  "Tầng lớp tri thức mới.",
         "traloi4":  "Tầng lớp những người giàu có và trung lưu.",
-        "dapAn":  "traloi4",
-        "dapAnText":  "Tầng lớp những người giàu có và trung lưu."
+        "dapAn":  "traloi3",
+        "dapAnText":  "Tầng lớp tri thức mới."
     },
     {
         "stt":  22,
@@ -1288,8 +1288,8 @@ const questions = [
         "traloi2":  "Có lãnh thổ chung ổn định không bị chia cắt.",
         "traloi3":  "Có sự quản lý của một nhà nước, nhà nước dân tộc độc lập.",
         "traloi4":  "Có chung một ngôn ngữ giao tiếp.",
-        "dapAn":  "traloi3",
-        "dapAnText":  "Có sự quản lý của một nhà nước, nhà nước dân tộc độc lập."
+        "dapAn":  "traloi4",
+        "dapAnText":  "Co chung một ngôn ngữ giao tiếp."
     },
     {
         "stt":  130,
