@@ -16,7 +16,7 @@
         <div>
           <h1 class="h3 mb-1">Bộ câu hỏi CNXHKH</h1>
           <p class="text-body-secondary mb-0">
-            Bạn có thể chọn bất kỳ cụm nào để làm. Mỗi cụm gồm 50 câu và có thể nhảy trực tiếp tới bất kỳ câu nào trong cụm đó.
+            Bạn có thể chọn bất kỳ cụm nào để làm. Bộ câu hỏi được chia thành 4 cụm để dàn trải.
           </p>
         </div>
         <div class="d-flex flex-wrap gap-2">
@@ -27,7 +27,7 @@
       </div>
 
       <div v-if="!questions.length" class="alert alert-danger mb-0">
-        Không tìm thấy dữ liệu câu hỏi. Hãy kiểm tra file <code>questions.js</code>.
+        Không tìm thấy dữ liệu câu hỏi. Hãy kiểm tra file <code>questions_2.js</code>.
       </div>
 
       <div v-else class="row g-4">
@@ -170,7 +170,7 @@
     </div>
   </div>
 
-  <script src="./questions.js"></script>
+  <script src="./questions_2.js"></script>
   <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
@@ -178,15 +178,14 @@
 
     createApp({
       data() {
-        return {
-          questions: Array.isArray(window.questions) ? window.questions : [],
-          currentIndex: 0,
-          activeGroupIndex: 0,
-          groupSize: 50,
-          groupProgress: {},
-          selectedAnswers: {},
-          states: {},
-          feedback: {}
+          return {
+            questions: Array.isArray(window.questions) ? window.questions : [],
+            currentIndex: 0,
+            activeGroupIndex: 0,
+            groupProgress: {},
+            selectedAnswers: {},
+            states: {},
+            feedback: {}
         };
       },
       computed: {
@@ -196,17 +195,20 @@
         currentGroupIndex() {
           return Math.floor(this.currentIndex / this.groupSize);
         },
+        groupSize() {
+          return Math.max(1, Math.ceil(this.questions.length / 4));
+        },
         currentOptions() {
           if (!this.currentQuestion) {
             return [];
           }
 
           return [
-            { key: "traloi1", label: "A", text: this.currentQuestion.traloi1 },
-            { key: "traloi2", label: "B", text: this.currentQuestion.traloi2 },
-            { key: "traloi3", label: "C", text: this.currentQuestion.traloi3 },
-            { key: "traloi4", label: "D", text: this.currentQuestion.traloi4 }
-          ];
+            { key: "traloi1", label: "A", text: this.currentQuestion.traloi1 || "" },
+            { key: "traloi2", label: "B", text: this.currentQuestion.traloi2 || "" },
+            { key: "traloi3", label: "C", text: this.currentQuestion.traloi3 || "" },
+            { key: "traloi4", label: "D", text: this.currentQuestion.traloi4 || "" }
+          ].filter((option) => option.text.trim().length > 0);
         },
         completedCount() {
           return Object.values(this.states).filter((value) => value === "correct").length;
